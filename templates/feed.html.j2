@@ -22,30 +22,30 @@
 </div>
 {% endif %}
 
-<h2 class="text-center border-bottom pb-2 mb-4"><span>Posts</span></h2>
+    <div class="col-md-8 mx-auto">
+        <h2 class="text-start border-bottom pb-2 mb-4"><span>Posts</span></h2>
 
-<div class="mb-4 text-center">
+        <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <!-- This is the 'sort' filter for New / Popular / Recommended -->
+          <div class="btn-group me-5" role="group" aria-label="Sort posts">
+            <!-- The link preserves the current_show state -->
+            <a href="{{ url_for('feed', sort='new', show=current_show) }}" class="btn {% if current_sort == 'new' %}btn-primary{% else %}btn-light{% endif %}">New</a>
+            <a href="{{ url_for('feed', sort='popular', show=current_show) }}" class="btn {% if current_sort == 'popular' %}btn-primary{% else %}btn-light{% endif %}">Popular</a>
+            <a href="{{ url_for('feed', sort='recommended', show=current_show) }}" class="btn {% if current_sort == 'recommended' %}btn-primary{% else %}btn-light{% endif %}">Recommended</a>
+          </div>
 
-<!-- This is the 'sort' filter for New / Popular / Recommended -->
-  <div class="btn-group me-5" role="group" aria-label="Sort posts">
-    <!-- The link preserves the current_show state -->
-    <a href="{{ url_for('feed', sort='new', show=current_show) }}" class="btn {% if current_sort == 'new' %}btn-primary{% else %}btn-light{% endif %}">New</a>
-    <a href="{{ url_for('feed', sort='popular', show=current_show) }}" class="btn {% if current_sort == 'popular' %}btn-primary{% else %}btn-light{% endif %}">Popular</a>
-    <a href="{{ url_for('feed', sort='recommended', show=current_show) }}" class="btn {% if current_sort == 'recommended' %}btn-primary{% else %}btn-light{% endif %}">Recommended</a>
-  </div>
+          <!-- This is the 'show' filter for All / Following -->
+          <!-- Following is only shown to logged in users -->
+          {% if session.get('user_id') %}
+          <div class="btn-group" role="group" aria-label="Filter posts">
+            <!-- The link preserves the current_sort state -->
+            <a href="{{ url_for('feed', sort=current_sort, show='all') }}" class="btn {% if current_show == 'all' %}btn-primary{% else %}btn-light{% endif %}">All</a>
+            <a href="{{ url_for('feed', sort=current_sort, show='following') }}" class="btn {% if current_show == 'following' %}btn-primary{% else %}btn-light{% endif %}">Following</a>
+          </div>
+           {% endif %}
+        </div>
+    </div>
 
-  <!-- This is the 'show' filter for All / Following -->
-  <!-- Following is only shown to logged in users -->
-  {% if session.get('user_id') %}
-  <div class="btn-group" role="group" aria-label="Filter posts">
-    <!-- The link preserves the current_sort state -->
-    <a href="{{ url_for('feed', sort=current_sort, show='all') }}" class="btn {% if current_show == 'all' %}btn-primary{% else %}btn-light{% endif %}">All</a>
-    <a href="{{ url_for('feed', sort=current_sort, show='following') }}" class="btn {% if current_show == 'following' %}btn-primary{% else %}btn-light{% endif %}">Following</a>
-  </div>
-   {% endif %}
-
-  
-</div>
 
 <div class="col-md-8 mx-auto">
   {% for entry in posts %}
