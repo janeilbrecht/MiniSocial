@@ -1,0 +1,72 @@
+{% extends "base.html.j2" %}
+{% block content %}
+{% from "macros/user_macros.html.j2" import user_display, user_avatar %}
+
+<div class="container mt-4 mb-5 col-lg-8 mx-auto">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap gap-2">
+    <div>
+      <a href="{{ url_for('group_page', name=group.name) }}" class="btn btn-sm btn-outline-secondary mb-2">← Back to g/{{ group.name }}</a>
+      <h2 class="mb-0 fw-bold">Members of g/{{ group.name }}</h2>
+    </div>
+    {% if is_admin %}
+    <div>
+      <form action="{{ url_for('toggle_group_members_visibility', name=group.name) }}" method="POST" class="d-inline">
+        {% if group.hide_members %}
+          <button type="submit" class="btn btn-sm btn-outline-success" title="Currently hidden from non-admins">
+            Make Members Public
+          </button>
+        {% else %}
+          <button type="submit" class="btn btn-sm btn-outline-secondary" title="Currently visible to everyone">
+            Hide Members from Public
+          </button>
+        {% endif %}
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if group.hide_members and is_admin %}
+  <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center justify-content-between">
+    <small>🔒 The member list is currently <strong>hidden</strong> from non-admin users.</small>
+  </div>
+  {% endif %}
+
+  <!-- Members Card -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <span class="fw-semibold">Total Members ({{ members|length }})</span>
+    </div>
+    <div class="card-body">
+      {% if members %}
+        <div class="d-flex flex-column gap-3">
+          {% for m in members %}
+            <div class="d-flex align-items-center justify-content-between py-1 border-bottom pb-2">
+              <div class="d-flex align-items-center gap-2">
+                {{ user_avatar(m.username, m.profile_picture, size='md') }}
+                <div>
+                  <div class="d-flex align-items-center gap-2">
+                    {{ user_display(m.username, m.profile_picture) }}
+                    {% if m.id == group.admin_id %}
+                      <span class="badge bg-warning text-dark">Admin</span>
+                    {% endif %}
+                  </div>
+                  {% if m.joined_at %}
+                    <small class="text-muted">Joined {{ m.joined_at|datetimeformat }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              <div>
+                <a href="/u/{{ m.username }}" class="btn btn-sm btn-outline-primary">Profile</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-center text-muted mb-0">No members found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

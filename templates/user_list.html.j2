@@ -1,11 +1,11 @@
 {% extends "base.html.j2" %}
 {% block content %}
-{% from "macros/user_macros.html.j2" import user_display %}
+{% from "macros/user_macros.html.j2" import user_display, user_avatar %}
 
 <div class="container mt-5 col-md-8 mx-auto">
   <!-- Heading for the page -->
   <h2 class="text-center border-bottom pb-2 mb-4">
-    <span>{{ title }} {{ user_display(user.username) }}</span>
+    <span>{{ title }} {{ user_display(user.username, user.profile_picture) }}</span>
   </h2>
 
   <!-- Card to contain the list of users -->
@@ -13,11 +13,12 @@
     <div class="card-body">
       {% if users %}
         <!-- List group for a clean, vertical list -->
-        <div >
+        <div class="d-flex flex-column gap-2">
           {% for u in users %}
-            <a href="{{ url_for('user_profile', username=u.username) }}" class="mb-3">
-              {{ user_display(u.username) }} <br>
-            </a>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              {{ user_avatar(u.username, u.profile_picture, size='sm') }}
+              {{ user_display(u.username, u.profile_picture) }}
+            </div>
           {% endfor %}
         </div>
       {% else %}

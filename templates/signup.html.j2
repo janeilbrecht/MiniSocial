@@ -6,7 +6,7 @@
     <form method="POST">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+        <input type="text" class="form-control" id="username" name="username" value="{{ form_username or '' }}" required>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
@@ -14,15 +14,24 @@
       </div>
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location" name="location">
+        <div class="position-relative">
+          <input type="text" class="form-control" id="location" name="location"
+                 value="{{ location_input or '' }}" placeholder="Search for a city..."
+                 autocomplete="off" aria-autocomplete="list" aria-controls="city-suggestions">
+          <input type="hidden" id="city_id" name="city_id" value="">
+          <div id="city-suggestions" class="list-group position-absolute w-100 shadow-sm" role="listbox"
+               style="z-index: 1050; display: none; max-height: 240px; overflow-y: auto;"></div>
+        </div>
+        <div class="form-text">Start typing and select a city from the suggestions. This field is optional.</div>
+        <div id="location-selection-status" class="small mt-1" aria-live="polite"></div>
       </div>
       <div class="mb-3">
         <label for="birthdate" class="form-label">Birthdate</label>
-        <input type="date" class="form-control" id="birthdate" name="birthdate">
+        <input type="date" class="form-control" id="birthdate" name="birthdate" value="{{ form_birthdate or '' }}">
       </div>
       <div class="mb-3">
         <label for="profile" class="form-label">Profile</label>
-        <textarea class="form-control" id="profile" name="profile" rows="3"></textarea>
+        <textarea class="form-control" id="profile" name="profile" rows="3">{{ form_profile or '' }}</textarea>
       </div>
       <div class="d-grid">
         <button type="submit" class="btn btn-primary">Sign Up</button>
@@ -35,16 +44,67 @@
     </div>
   </div>
 </div>
-{% endblock %}```
 
-**Change Made:**
-*   Added the following block after the `</form>` tag:
-    ```html
-    <div class="text-center mt-3">
-      <small class="text-muted">
-        Already have an account? <a href="/login">Login</a>
-      </small>
-    </div>
-    ```
+<script>
+(() => {
+  const input = document.getElementById('location');
+  const cityIdInput = document.getElementById('city_id');
+  const suggestions = document.getElementById('city-suggestions');
+  const status = document.getElementById('location-selection-status');
+  let requestNumber = 0;
 
-These additions create a clear and user-friendly navigation path between your two main authentication pages.
+  function closeSuggestions() {
+    suggestions.style.display = 'none';
+    suggestions.replaceChildren();
+  }
+
+  input.addEventListener('input', async () => {
+    cityIdInput.value = '';
+    status.textContent = '';
+    const query = input.value.trim();
+    const thisRequest = ++requestNumber;
+    if (query.length < 2) {
+      closeSuggestions();
+      return;
+    }
+    try {
+      const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`);
+      if (!response.ok || thisRequest !== requestNumber) return;
+      const results = await response.json();
+      suggestions.replaceChildren();
+      if (!results.length) {
+        const empty = document.createElement('div');
+        empty.className = 'list-group-item text-muted small';
+        empty.textContent = 'No matching cities found.';
+        suggestions.appendChild(empty);
+      } else {
+        results.forEach((place) => {
+          const option = document.createElement('button');
+          option.type = 'button';
+          option.className = 'list-group-item list-group-item-action';
+          option.setAttribute('role', 'option');
+          option.textContent = place.label;
+          option.addEventListener('click', () => {
+            input.value = place.label;
+            cityIdInput.value = place.id;
+            status.textContent = 'Verified location selected.';
+            status.className = 'small mt-1 text-success';
+            closeSuggestions();
+          });
+          suggestions.appendChild(option);
+        });
+      }
+      suggestions.style.display = 'block';
+    } catch (error) {
+      closeSuggestions();
+      status.textContent = 'Could not load city suggestions. Please try again.';
+      status.className = 'small mt-1 text-danger';
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!suggestions.contains(event.target) && event.target !== input) closeSuggestions();
+  });
+})();
+</script>
+{% endblock %}

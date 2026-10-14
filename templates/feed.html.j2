@@ -1,8 +1,8 @@
 {% extends "base.html.j2" %}
 {% block content %}
-{% from "macros/user_macros.html.j2" import user_display %}
+{% from "macros/user_macros.html.j2" import user_display, user_avatar %}
 
-<div class="align-center text-center">
+<div class="align-left text-center">
   <img src="{{ url_for('static', filename='icon.png') }}" alt="Logo" style="height: 64px;" class="mb-4">
 </div>
 
@@ -19,6 +19,30 @@
       </form>
     </div>
   </div>
+</div>
+{% endif %}
+
+{% if session.get('user_id') %}
+<div class="col-md-8 mx-auto mb-4">
+  {% if town_hall_country %}
+  <a href="{{ url_for('town_hall') }}" class="text-decoration-none">
+    <div class="card border-0 shadow-sm text-white" style="background: linear-gradient(120deg, #0d6efd, #084298);">
+      <div class="card-body d-flex align-items-center justify-content-between gap-3">
+        <div>
+          <div class="small text-white-50 text-uppercase fw-semibold mb-1">Your country's Town Hall</div>
+          <h5 class="card-title mb-1 text-white">{{ country_flag(town_hall_country.country_code) }} {{ town_hall_country.country_name }}</h5>
+          <p class="mb-0 text-white">Discuss what's happening with people from your country.</p>
+        </div>
+        <span class="btn btn-light text-primary flex-shrink-0">Enter <span aria-hidden="true">→</span></span>
+      </div>
+    </div>
+  </a>
+  {% else %}
+  <div class="alert alert-info mb-0">
+    <strong>Your country's Town Hall</strong><br>
+    Select a verified city in <a href="{{ url_for('edit_profile') }}" class="alert-link">your profile</a> to join discussions with people from your country.
+  </div>
+  {% endif %}
 </div>
 {% endif %}
 
@@ -52,14 +76,24 @@
   <div class="card mb-4" id="post-{{ entry.post.id }}">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
-        <h3 class="card-title mb-0">
-          {% if entry.followed_poster %}
-          <a href="/u/{{ entry.post.user_id }}">{{ user_display(entry.post.username) }}<span class="text-success p-1" data-toggle="tooltip" data-placement="top" title="You are following this user"> ✓ </span>
-</a>
-          {% else %}
-          <a href="/u/{{ entry.post.user_id }}">{{ user_display(entry.post.username) }} </a>
-          {% endif %}
-        </h3>
+        <div class="d-flex align-items-center gap-2">
+          {{ user_avatar(entry.post.username, entry.post.profile_picture, size='md') }}
+          <div>
+            <h3 class="card-title mb-0 fs-5">
+              {{ user_display(entry.post.username, entry.post.profile_picture) }}
+              {% if entry.followed_poster %}
+                <span class="text-success p-1" data-toggle="tooltip" data-placement="top" title="You are following this user"> ✓ </span>
+              {% endif %}
+            </h3>
+            {% if entry.post.group_name %}
+              <div class="small mt-1">
+                <a href="{{ url_for('group_page', name=entry.post.group_name) }}" class="badge bg-secondary text-decoration-none">
+                  g/{{ entry.post.group_name }}
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
 
         
         {% if session.get('user_id') == entry.post.user_id %}
@@ -129,17 +163,20 @@
      {% if entry.comments %}
       <hr>
       {% if entry.comments %}
-        <h6 class="mb-0">Comments ({{ entry.comments | count }})</h4>
+        <h6 class="mb-0">Comments ({{ entry.comments | count }})</h6>
       {% else %}
-        <h6 class="mb-0">Comments</h4>
+        <h6 class="mb-0">Comments</h6>
       {% endif %}
       <ul class="list-group list-group-flush shadow-none border-0">
         {% for comment in entry.comments[-2:] %}
         <li class="card shadow-none p-2 mt-2">
-          <div class="d-flex justify-content-between">
-            <div>
-              <strong><a href="/u/{{ comment.username }}">{{ user_display(comment.username) }}</a></strong>
-              <p class="mb-0">{{ comment.content }}</p>
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex align-items-start gap-2">
+              {{ user_avatar(comment.username, comment.profile_picture, size='sm') }}
+              <div>
+                <strong>{{ user_display(comment.username, comment.profile_picture) }}</strong>
+                <p class="mb-0">{{ comment.content }}</p>
+              </div>
             </div>
             
             {% if session.get('user_id') == comment.user_id or session.get('user_id') == entry.post.user_id %}

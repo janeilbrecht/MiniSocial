@@ -2,47 +2,73 @@
 {% block content %}
 {% from "macros/user_macros.html.j2" import user_display%}
 
-<div class="container mt-5">
+<div class="container mt-4 mb-5">
 
   <!-- User Profile Information Card -->
-  <div class="card col-lg-8 mx-auto">
-    <div class="row g-0 align-items-center">
-      <div class="col-md-12">
-        <div class="card-body">
-          <h2 class="card-title">{{ user_display(user.username) }}</h2>
-          <p class="card-text text-muted mb-3">
-            <strong>Location:</strong> {{ user.location or "N/A" }}<br>
-            <strong>Birthdate:</strong> {{ user.birthdate or "N/A" }}<br>
-            <strong>Joined:</strong> {{ user.created_at|datetimeformat }}
-          </p>
-          <p class="card-text">{{ user.profile or "No profile information provided." }}</p>
+  <div class="card col-lg-8 mx-auto profile-card {% if is_dark_color(user.bg_color) %}profile-card-dark{% else %}profile-card-light{% endif %}" style="background-color: {{ user.bg_color or '#f2f2f2' }};">
+    <!-- Banner Picture -->
+    <div class="profile-banner-container {% if not user.banner_picture %}profile-banner-default{% endif %}">
+      {% if user.banner_picture %}
+        <img src="{{ url_for('static', filename='uploads/' + user.banner_picture) }}" alt="{{ user.username }} banner" class="profile-banner-img">
+      {% endif %}
+    </div>
 
-         {% if session.user_id and session.user_id != user.id %}
-            <div class="my-3">
-              {# The logic is now a simple boolean check #}
-              {% if is_following %}
-                <form action="{{ url_for('unfollow_user', user_id=user.id) }}" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-secondary">Unfollow</button>
-                </form>
-              {% else %}
-                <form action="{{ url_for('follow_user', user_id=user.id) }}" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-primary">Follow</button>
-                </form>
-              {% endif %}
+    <div class="card-body position-relative px-4 pb-4 pt-0">
+      <!-- Profile Picture (Avatar) and Actions -->
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 profile-avatar-container">
+        <div>
+          {% if user.profile_picture %}
+            <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="{{ user.username }}" class="profile-avatar-img">
+          {% else %}
+            <div class="profile-avatar-placeholder" style="background-color: {{ loop_color(user.username) }};">
+              {{ user.username[0]|upper }}
             </div>
           {% endif %}
+        </div>
+        <div>
+          {% if session.user_id == user.id %}
+            <a href="{{ url_for('edit_profile') }}" class="btn btn-light text-dark">
+              Edit Profile
+            </a>
+          {% elif session.user_id %}
+            {% if is_following %}
+              <form action="{{ url_for('unfollow_user', user_id=user.id) }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-secondary">Unfollow</button>
+              </form>
+            {% else %}
+              <form action="{{ url_for('follow_user', user_id=user.id) }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-primary">Follow</button>
+              </form>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
 
-          <div class="mt-4 d-flex">
-            <div class="me-4">
-              <a href="/u/{{ user.username }}/followers" class="text-decoration-none text-dark">
-                <strong>{{ followers_count }}</strong> Followers
-              </a>
-            </div>
-            <div>
-              <a href="/u/{{ user.username }}/following" class="text-decoration-none text-dark">
-                <strong>{{ following_count }}</strong> Following
-              </a>
-            </div>
+      <!-- User Details -->
+      <div class="mt-2">
+        <h2 class="card-title mb-1 fw-bold">{{ user.username }}</h2>
+        <div class="text-muted mb-2">
+          {{ user_display(user.username, user.profile_picture) }}
+        </div>
+
+        <p class="card-text text-muted mb-3">
+          {% if user.location %}<strong>Location:</strong> {{ user.location }}<br>{% endif %}
+          {% if user.birthdate %}<strong>Birthdate:</strong> {{ user.birthdate }}<br>{% endif %}
+          <strong>Joined:</strong> {{ user.created_at|datetimeformat }}
+        </p>
+
+        <p class="card-text fs-6">{{ user.profile or "No profile information provided." }}</p>
+
+        <div class="mt-4 d-flex">
+          <div class="me-4">
+            <a href="/u/{{ user.username }}/followers" class="text-decoration-none profile-stats-link">
+              <strong>{{ followers_count }}</strong> Followers
+            </a>
+          </div>
+          <div>
+            <a href="/u/{{ user.username }}/following" class="text-decoration-none profile-stats-link">
+              <strong>{{ following_count }}</strong> Following
+            </a>
           </div>
         </div>
       </div>
@@ -57,6 +83,11 @@
       <div class="card h-100 shadow-sm card-hover">
         <a href="{{ url_for('post_detail', post_id=post.id) }}" class="text-decoration-none text-reset">
           <div class="card-body">
+            {% if post.group_name %}
+              <div class="mb-1">
+                <span class="badge bg-secondary">g/{{ post.group_name }}</span>
+              </div>
+            {% endif %}
             <p class="card-text">{{ post.content|truncate(100, True, '...') }}</p>
             <small class="text-muted">Posted on {{ post.created_at|datetimeformat }}</small>
           </div>

@@ -1,0 +1,172 @@
+{% extends "base.html.j2" %}
+{% block content %}
+{% from "macros/user_macros.html.j2" import user_display, user_avatar %}
+
+<div class="container mt-4 mb-5 col-lg-9 mx-auto">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap gap-2">
+    <h2 class="mb-0 fw-bold">Groups</h2>
+    {% if session.get('user_id') %}
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#createGroupCollapse" aria-expanded="false" aria-controls="createGroupCollapse">
+      + Create Group
+    </button>
+    {% endif %}
+  </div>
+
+  <!-- Create Group Collapse Form -->
+  {% if session.get('user_id') %}
+  <div class="collapse mb-4" id="createGroupCollapse">
+    <div class="card shadow-sm border-primary">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Create a New Group</h5>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('create_group') }}" method="POST">
+          <div class="mb-3">
+            <label for="groupName" class="form-label fw-semibold">Group Name <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">g/</span>
+              <input type="text" class="form-control" id="groupName" name="name" required placeholder="e.g. photography, tech_news, music" pattern="^[a-zA-Z0-9_-]{2,50}$" title="2-50 characters: letters, numbers, underscores, and hyphens">
+            </div>
+            <div class="form-text">Choose a unique name without spaces.</div>
+          </div>
+          <div class="mb-3">
+            <label for="groupDescription" class="form-label fw-semibold">Description</label>
+            <textarea class="form-control" id="groupDescription" name="description" rows="3" placeholder="What is this group about?"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="groupBgColor" class="form-label fw-semibold">Theme Color</label>
+            <input type="color" class="form-control form-control-color" id="groupBgColor" name="bg_color" value="#f2f2f2" title="Choose group theme color">
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="groupHideMembers" name="hide_members" value="1">
+            <label class="form-check-label" for="groupHideMembers">Hide member list from non-admin users</label>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#createGroupCollapse">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Group</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Extra Section: My Groups (for logged in users) -->
+  {% if session.get('user_id') %}
+  <div class="mb-5">
+    <h3 class="border-bottom pb-2 mb-3 fs-4"><span>My Groups</span></h3>
+    {% if my_groups %}
+    <div class="row g-3">
+      {% for g in my_groups %}
+      <div class="col-md-6">
+        <div class="card h-100 shadow-sm card-hover">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <a href="{{ url_for('group_page', name=g.name) }}" class="text-decoration-none text-reset">
+                <h4 class="card-title fw-bold mb-0 text-primary">g/{{ g.name }}</h4>
+              </a>
+              {% if g.admin_id == session.get('user_id') %}
+                <span class="badge bg-warning text-dark">Admin</span>
+              {% else %}
+                <span class="badge bg-success">Member</span>
+              {% endif %}
+            </div>
+
+            <p class="card-text text-muted flex-grow-1 mb-3">
+              {{ g.description or "No description provided." }}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+              <span><strong>{{ g.member_count }}</strong> members</span>
+              <span><strong>{{ g.post_count }}</strong> posts</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+              <div class="small text-muted d-flex align-items-center gap-1">
+                Admin: {{ user_display(g.admin_username, g.admin_profile_picture) }}
+              </div>
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('group_page', name=g.name) }}" class="btn btn-sm btn-outline-primary">Visit</a>
+                <form action="{{ url_for('leave_group', name=g.name) }}" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary">Leave</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="card shadow-none bg-light p-4 text-center">
+      <p class="text-muted mb-0">You haven't joined any groups yet. Explore groups below and join communities of your interest!</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Section: All Groups -->
+  <div>
+    <h3 class="border-bottom pb-2 mb-3 fs-4"><span>All Groups</span></h3>
+    {% if all_groups %}
+    <div class="row g-3">
+      {% for g in all_groups %}
+      <div class="col-md-6">
+        <div class="card h-100 shadow-sm card-hover">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <a href="{{ url_for('group_page', name=g.name) }}" class="text-decoration-none text-reset">
+                <h4 class="card-title fw-bold mb-0 text-primary">g/{{ g.name }}</h4>
+              </a>
+              {% if session.get('user_id') %}
+                {% if g.admin_id == session.get('user_id') %}
+                  <span class="badge bg-warning text-dark">Admin</span>
+                {% elif g.is_member %}
+                  <span class="badge bg-success">Joined</span>
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <p class="card-text text-muted flex-grow-1 mb-3">
+              {{ g.description or "No description provided." }}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+              <span><strong>{{ g.member_count }}</strong> members</span>
+              <span><strong>{{ g.post_count }}</strong> posts</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+              <div class="small text-muted d-flex align-items-center gap-1">
+                Admin: {{ user_display(g.admin_username, g.admin_profile_picture) }}
+              </div>
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('group_page', name=g.name) }}" class="btn btn-sm btn-outline-primary">Visit</a>
+                {% if session.get('user_id') %}
+                  {% if g.is_member %}
+                    <form action="{{ url_for('leave_group', name=g.name) }}" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary">Leave</button>
+                    </form>
+                  {% else %}
+                    <form action="{{ url_for('join_group', name=g.name) }}" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-sm btn-outline-success">Join</button>
+                    </form>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="card shadow-none bg-light p-4 text-center">
+      <p class="text-muted mb-0">No groups have been created yet. Be the first to start a group!</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

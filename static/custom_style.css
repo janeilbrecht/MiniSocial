@@ -16,4 +16,227 @@ footer {
   text-align: center;
 }
 
+/* Profile Customization Styles */
+.profile-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
 
+.profile-card.profile-card-dark {
+  color: #ffffff;
+}
+
+.profile-card.profile-card-dark h2,
+.profile-card.profile-card-dark .card-title,
+.profile-card.profile-card-dark .card-text,
+.profile-card.profile-card-dark p,
+.profile-card.profile-card-dark strong {
+  color: #ffffff !important;
+}
+
+.profile-card.profile-card-dark .text-muted {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.profile-card.profile-card-dark a.profile-stats-link {
+  color: #ffffff !important;
+}
+
+.profile-card.profile-card-dark a.profile-stats-link:hover {
+  color: #e0e0e0 !important;
+  text-decoration: underline !important;
+}
+
+.profile-card.profile-card-light {
+  color: #212529;
+}
+
+.profile-card.profile-card-light a.profile-stats-link {
+  color: #212529 !important;
+}
+
+.profile-card.profile-card-light a.profile-stats-link:hover {
+  color: #000000 !important;
+  text-decoration: underline !important;
+}
+
+.profile-banner-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  background-color: #3b64a1;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.profile-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-banner-default {
+  background: linear-gradient(135deg, #4a7dca 0%, #3b64a1 50%, #29487d 100%);
+  height: 150px;
+}
+
+.profile-avatar-container {
+  position: relative;
+  margin-top: -50px;
+  margin-bottom: 12px;
+}
+
+.profile-avatar-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  background-color: #fff;
+  display: block;
+}
+
+.profile-avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.profile-avatar-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #bbb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-banner-preview {
+  width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Post and Comment Avatar Styles */
+.post-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  display: block;
+  background-color: #fff;
+}
+
+.post-avatar-placeholder {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.post-avatar-md {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  font-size: 1.1rem;
+}
+
+.post-avatar-sm {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  font-size: 0.8rem;
+  border-width: 1.5px;
+}
+
+.user-display-avatar {
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: -0.2em;
+  border: 1px solid #ccc;
+}
+
+/* Outline Buttons Styles */
+.btn-outline-primary {
+  color: #3b64a1 !important;
+  border-color: #4a7dca !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+.btn-outline-primary:hover, .btn-outline-primary:active, .btn-outline-primary:focus {
+  color: #ffffff !important;
+  background-color: #4a7dca !important;
+  border-color: #3b64a1 !important;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-outline-secondary {
+  color: #444444 !important;
+  border-color: #888888 !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+.btn-outline-secondary:hover, .btn-outline-secondary:active, .btn-outline-secondary:focus {
+  color: #ffffff !important;
+  background-color: #7a7a7a !important;
+  border-color: #5e5e5e !important;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-outline-success {
+  color: #2e7d32 !important;
+  border-color: #5bb75b !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+.btn-outline-success:hover, .btn-outline-success:active, .btn-outline-success:focus {
+  color: #ffffff !important;
+  background-color: #5bb75b !important;
+  border-color: #499249 !important;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-outline-danger {
+  color: #c62828 !important;
+  border-color: #da4f49 !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+.btn-outline-danger:hover, .btn-outline-danger:active, .btn-outline-danger:focus {
+  color: #ffffff !important;
+  background-color: #da4f49 !important;
+  border-color: #b94047 !important;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4) !important;
+}
